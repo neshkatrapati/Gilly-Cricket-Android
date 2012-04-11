@@ -28,12 +28,14 @@ public class GillyCricketActivity extends Activity {
 		setContentView(R.layout.main);
 		WebView webview = (WebView) findViewById(R.id.webview_compontent);
 		webview.getSettings().setJavaScriptEnabled(true);
-		webview.loadUrl("https://github.com/neshkatrapati/GillyCricket/blob/master/README.md");
-		notifyFeeds();
+		webview.loadUrl("http://neshkatrapati.github.com/Gilly-Cricket-Android/");
+		FetchThread ft = new FetchThread(this);
+		ft.start();
 	}
 
 	public void createNotif(String tickerText, String contentTitle,
-			String contentText,String URL,int num) {
+		String contentText,String URL,int num) {
+		
 		String ns = Context.NOTIFICATION_SERVICE;
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 		int icon = R.drawable.ic_launcher;
@@ -51,6 +53,9 @@ public class GillyCricketActivity extends Activity {
 				notificationIntent, 0);
 		
 		notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE | Notification.FLAG_AUTO_CANCEL;
+		notification.defaults |= Notification.DEFAULT_SOUND;
+		notification.defaults |= Notification.DEFAULT_VIBRATE;
+		notification.defaults |= Notification.DEFAULT_LIGHTS;
 
 		notification.setLatestEventInfo(context, contentTitle, contentText,
 				contentIntent);
@@ -59,52 +64,7 @@ public class GillyCricketActivity extends Activity {
 		mNotificationManager.notify(HELLO_ID, notification);
 	}
 
-	public void notifyFeeds(){
-    	
-    	
-    	ArrayList<ArrayList<String>> news;
-		try {
-			news = readRSSDocument();
 
-	    	for (int i = 0; i< news.size(); i++){
-	    		ArrayList<String> n = news.get(i);
-	    		String title = n.get(0);
-	    		String url = n.get(1);
-	    		//Toast.makeText(GillyCricketActivity.this, (String)title, Toast.LENGTH_SHORT);
-	    		createNotif((String)title, "Gilly Cricket", (String) title ,url,i+1);
-	    		
-	    	}
 
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    		}
-  
-
-	public static ArrayList<ArrayList<String>> readRSSDocument() throws Exception {
-
-		RssParser parser = RssParserFactory.createDefault();
-		Rss rss = parser.parse(new URL("http://static.cricinfo.com/rss/livescores.xml"));
-		// Get all XML elements in the feed
-		Collection items = rss.getChannel().getItems();
-		ArrayList<ArrayList<String>> a = new ArrayList<ArrayList<String>>();
-		if (items != null && !items.isEmpty()) {
-			// Iterate over our main elements. Should have one for each article
-			for (Iterator i = items.iterator(); i.hasNext(); System.out
-					.println()) {
-				Item item = (Item) i.next();
-				ArrayList<String> b = new ArrayList<String>();
-				b.add(item.getTitle().toString());
-				b.add(item.getLink().toString());
-				a.add(b);
-				
-				//System.out.println("Title: " + item.getTitle());
-				//System.out.println("Link: " + item.getLink());
-				//System.out.println("Description: " + item.getDescription());
-			}
-
-		}
-		return a;
-	}
+	
 }
